@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.3
 
 MyStackView {
     id: thisStackView
+
+    property bool showDate: false
     delegate: Frame {
         width: parent.width
         height: grid.height + 2*padding
@@ -20,7 +22,7 @@ MyStackView {
                 model: modelData.speakers
                 Label { text: "\uf007"; Layout.preferredWidth: internal.maxIconWidth; horizontalAlignment: Text.AlignHCenter; font { family: fontAwesome.name; pointSize: 12 } }
             }
-            Label { text: modelData.start_date.substring(11, 16) + " ‒ " + modelData.end_date.substring(11, 16) }
+            Label { text: ((showDate) ? (modelData.start_date.substring(8, 10) + "/" + modelData.start_date.substring(5, 7) + "/" + modelData.start_date.substring(0, 4) + " ("):"") + modelData.start_date.substring(11, 16) + " ‒ " + modelData.end_date.substring(11, 16) + ((showDate) ? ")":"") }
             Label { text: (visible) ? (modelData.room.name + " ‒ " + modelData.room.location):""; visible: modelData.room !== undefined }
             Label { id: titleLabel; color: "#1c274a"; text: modelData.title; Layout.preferredWidth: thisStackView.width*0.8; wrapMode: Text.WordWrap }
             Repeater {

@@ -4,7 +4,6 @@
         <file>activity.qml</file>
         <file>speaker.qml</file>
         <file>room.qml</file>
-        <file>tag.qml</file>
         <file>about.qml</file>
         <file>MyStackView.qml</file>
         <file>MyTabButton.qml</file>

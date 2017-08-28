@@ -36,7 +36,7 @@ Flickable {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Ver atividades de " + model.name.split(" ")[0]
-            onClicked:  speakersStackView.push("qrc:/ActivitiesStackView.qml", { "model": model.activities })
+            onClicked:  speakersStackView.push("qrc:/ActivitiesStackView.qml", { "model": model.activities, "showDate": true })
         }
     }
 

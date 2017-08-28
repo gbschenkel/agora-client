@@ -15,7 +15,7 @@ ApplicationWindow {
     Material.foreground: "#05070d"
     Material.accent: "#41cd52"
 
-    property bool loggedin: userModel.json !== undefined && userModel.json["login"] !== undefined
+    property bool loggedin: userModel.json !== undefined && userModel.json.login !== undefined
     property string user
 
     header: ToolBar {
@@ -41,6 +41,7 @@ ApplicationWindow {
                     width: 28; height: 28
                     source: "qrc:/qt-logo.png"
                 }
+                onClicked: internal.currentStackView.push("qrc:/about.qml")
             }
         }
     }
@@ -64,7 +65,7 @@ ApplicationWindow {
             if (state == "error" && userModel.errorString === "The server returned error 0") {
                 errorLabel.text = "dispositivo sem conexão\nconecte-se à Internet e tente novamente"
             }
-            if (state == "ready" && userModel.json["login"] === undefined) {
+            if (state == "ready" && userModel.json.login === undefined) {
                 errorLabel.text = "inscrição não localizada"
             }
         }
@@ -103,11 +104,11 @@ ApplicationWindow {
                     id: errorLabel
                     horizontalAlignment: Label.AlignHCenter
                     anchors { top: loginButton.bottom; topMargin: 6; horizontalCenter: parent.horizontalCenter }
-                    visible: (loginTextField.text != "" && userModel.json !== undefined && userModel.json["login"] === undefined) || userModel.errorString !== ""
+                    visible: (loginTextField.text != "" && userModel.json !== undefined && userModel.json.login === undefined) || userModel.errorString !== ""
                     color: "#41cd52"
                 }
                 onClicked: {
-                    userModel.source = internal.baseServer + "/login/" + loginTextField.text
+                    userModel.source = internal.baseServer + "/login/" + loginTextField.text.toUpperCase()
                     userModel.load()
                 }
             }
@@ -173,7 +174,7 @@ ApplicationWindow {
                 }
                 ItemDelegate {
                     anchors { fill: parent; margins: -11 }
-                    onClicked: tagsStackView.push("qrc:/ActivitiesStackView.qml", { "model": tagsStackView.model[index].activities })
+                    onClicked: tagsStackView.push("qrc:/ActivitiesStackView.qml", { "model": tagsStackView.model[index].activities, "showDate": true })
                 }
             }
         }
@@ -191,8 +192,8 @@ ApplicationWindow {
             width: parent.width
             fillMode: Image.PreserveAspectFit
             Text {
-                anchors { left: parent.left; leftMargin: 20; bottom: parent.bottom; bottomMargin: 5 }
-                text: (userModel.json !== undefined && userModel.json["name"] !== undefined) ? (userModel.json["name"].split(" ")[0] + " " + userModel.json["name"].split(" ").slice(-1)[0]):""
+                anchors { left: parent.left; leftMargin: 15; bottom: parent.bottom; bottomMargin: 5 }
+                text: (userModel.json !== undefined && userModel.json.name !== undefined) ? (userModel.json.name.split(" ")[0] + " " + userModel.json.name.split(" ").slice(-1)[0]):""
                 color: "#05070d"
             }
         }
@@ -281,7 +282,7 @@ ApplicationWindow {
         }
         else {
             close.accepted = true
-            if (userModel.json["login"] === undefined)
+            if (userModel.json.login === undefined)
                 userModel.json = undefined
         }
     }
