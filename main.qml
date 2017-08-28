@@ -41,7 +41,15 @@ ApplicationWindow {
                     width: 28; height: 28
                     source: "qrc:/qt-logo.png"
                 }
-                onClicked: internal.currentStackView.push("qrc:/about.qml")
+                onClicked: {
+                    for (var i = 0; i < internal.stackViews.length; i++) {
+                        if (internal.stackViews[i].currentItem.objectName === "aboutPage") {
+                            tabBar.currentIndex = i
+                            return
+                        }
+                    }
+                    internal.currentStackView.push("qrc:/about.qml", { "objectName": "aboutPage" })
+                }
             }
         }
     }

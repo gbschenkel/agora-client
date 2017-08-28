@@ -37,6 +37,6 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
     ANDROID_EXTRA_LIBS = \
-        /data/devel/agora/agora-client/libcrypto.so \
+        $$PWD/libcrypto.so \
         $$PWD/libssl.so
 }
