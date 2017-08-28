@@ -18,7 +18,7 @@ Flickable {
             source: "qrc:/agora-qtconbr-icon.png"
         }
         Label {
-            text: "<br/><b>Ágora Mobile for QtCon Brasil v0.1</b><br/>Este aplicativo foi desenvolvido em Qt pela <a href=\"http://qmob.solutions\" target=\"_blank\">qmob solutions</a>, especialmente para a QtCon Brasil."
+            text: "<br/><b>Ágora Mobile for QtCon Brasil v0.1.2</b><br/>Este aplicativo foi desenvolvido em Qt pela <a href=\"http://qmob.solutions\" target=\"_blank\">qmob solutions</a>, especialmente para a QtCon Brasil."
             font.bold: false
             horizontalAlignment: Label.AlignHCenter
             width: parent.width
