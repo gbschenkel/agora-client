@@ -28,7 +28,7 @@ MyStackView {
             Label { id: titleLabel; color: "#1c274a"; text: modelData.title; Layout.preferredWidth: thisStackView.width*0.8; wrapMode: Text.WordWrap }
             Repeater {
                 model: modelData.speakers
-                Label { text: modelData.name + " (" + modelData.affiliation + ")"; Layout.preferredWidth: frame.width-10*internal.viewMargin; elide: Text.ElideRight }
+                Label { text: modelData.name + ((modelData.affiliation !== "") ? (" (" + modelData.affiliation + ")"):""); Layout.preferredWidth: frame.width-10*internal.viewMargin; elide: Text.ElideRight }
             }
         }
         ItemDelegate {

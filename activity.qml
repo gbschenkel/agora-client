@@ -32,7 +32,7 @@ Flickable {
                 Repeater {
                     model: flickable.model.speakers
                     Label {
-                        text: "<b>" + modelData.name + "</b> - " + modelData.resume
+                        text: "<b>" + modelData.name + "</b> - " + ((modelData.resume !== "") ? modelData.resume:"Não informada")
                         font.bold: false
                         width: parent.width
                         wrapMode: Text.WordWrap

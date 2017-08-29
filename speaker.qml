@@ -18,7 +18,7 @@ Flickable {
         MyGroupBox {
             title: "Afiliação"
             Label {
-                text: model.affiliation
+                text: (model.affiliation !== "") ? model.affiliation:"Não informada"
                 font.bold: false
                 width: parent.width
                 wrapMode: Text.WordWrap
@@ -27,7 +27,7 @@ Flickable {
         MyGroupBox {
             title: "Biografia do Palestrante"
             Label {
-                text: model.resume
+                text: (model.resume !== "") ? model.resume:"Não informada"
                 font.bold: false
                 width: parent.width
                 wrapMode: Text.WordWrap

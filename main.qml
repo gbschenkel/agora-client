@@ -159,7 +159,7 @@ ApplicationWindow {
                 RowLayout {
                     id: speakerRow
                     Label { id: iconText; text: "\uf007"; font { family: fontAwesome.name; pointSize: 12 } }
-                    Label { text: modelData.name + " (" + modelData.affiliation + ")"; Layout.preferredWidth: frame.width-iconText.width-6*internal.viewMargin; elide: Text.ElideRight }
+                    Label { text: modelData.name + ((modelData.affiliation !== "") ? (" (" + modelData.affiliation + ")"):""); Layout.preferredWidth: frame.width-iconText.width-6*internal.viewMargin; elide: Text.ElideRight }
                 }
                 ItemDelegate {
                     anchors { fill: parent; margins: -11 }
