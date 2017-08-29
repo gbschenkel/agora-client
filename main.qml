@@ -248,7 +248,14 @@ ApplicationWindow {
                             loginTextField.text = ""
                         }
                         if (index == 4) {
-                            internal.currentStackView.push("qrc:/about.qml")
+                            for (var i = 0; i < internal.stackViews.length; i++) {
+                                if (internal.stackViews[i].currentItem.objectName === "aboutPage") {
+                                    tabBar.currentIndex = i
+                                    drawer.close()
+                                    return
+                                }
+                            }
+                            internal.currentStackView.push("qrc:/about.qml", { "objectName": "aboutPage" })
                         }
                         drawer.close()
                     }
