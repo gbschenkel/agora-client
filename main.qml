@@ -56,8 +56,8 @@ ApplicationWindow {
 
     QtObject {
         id: internal
-//        property string baseServer: "http://agora-server.herokuapp.com"
-        property string baseServer: "http://127.0.0.1:4567"
+        property string baseServer: "http://agora-server.herokuapp.com"
+//        property string baseServer: "http://127.0.0.1:4567"
         property real maxWidth: fontMetrics.advanceWidth("PALESTRANTES")*1.75
         property real maxIconWidth: fontMetrics.advanceWidth("\uf19d")
         property int viewMargin: 5
