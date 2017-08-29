@@ -56,8 +56,8 @@ ApplicationWindow {
 
     QtObject {
         id: internal
-        property string baseServer: "http://agora-server.herokuapp.com"
-//        property string baseServer: "http://127.0.0.1:5000"
+//        property string baseServer: "http://agora-server.herokuapp.com"
+        property string baseServer: "http://127.0.0.1:4567"
         property real maxWidth: fontMetrics.advanceWidth("PALESTRANTES")*1.75
         property real maxIconWidth: fontMetrics.advanceWidth("\uf19d")
         property int viewMargin: 5
@@ -78,9 +78,9 @@ ApplicationWindow {
             }
         }
     }
-    JSONListModel { id: activitiesModel; source: internal.baseServer + "/full_activities_by_conference_and_day/1" }
-    JSONListModel { id: speakersModel; source: internal.baseServer + "/full_speakers_by_conference/1" }
-    JSONListModel { id: tagsModel; source: internal.baseServer + "/full_activity_tags_by_conference/1" }
+    JSONListModel { id: activitiesModel; source: internal.baseServer + "/full_activities_by_conference_and_day/2" }
+    JSONListModel { id: speakersModel; source: internal.baseServer + "/full_speakers_by_conference/2" }
+    JSONListModel { id: tagsModel; source: internal.baseServer + "/full_activity_tags_by_conference/2" }
 
     Item {
         visible: !loggedin
@@ -153,11 +153,13 @@ ApplicationWindow {
             delegate: Frame {
                 width: parent.width
                 height: speakerRow.height + 2*padding
+                clip: true
                 anchors { left: parent.left; right: parent.right; rightMargin: internal.viewMargin; leftMargin: internal.viewMargin }
                 RowLayout {
                     id: speakerRow
+                    width: parent.width
                     Label { text: "\uf007"; font { family: fontAwesome.name; pointSize: 12 } }
-                    Label { text: modelData.name + " (" + modelData.affiliation + ")" }
+                    Label { text: modelData.name + " (" + modelData.affiliation + ")"; Layout.preferredWidth: parent.width; elide: Text.ElideRight }
                 }
                 ItemDelegate {
                     anchors { fill: parent; margins: -11 }
