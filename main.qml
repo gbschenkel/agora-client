@@ -151,15 +151,15 @@ ApplicationWindow {
             Layout.fillWidth: true
             model: speakersModel.json
             delegate: Frame {
+                id: frame
                 width: parent.width
                 height: speakerRow.height + 2*padding
                 clip: true
                 anchors { left: parent.left; right: parent.right; rightMargin: internal.viewMargin; leftMargin: internal.viewMargin }
                 RowLayout {
                     id: speakerRow
-                    width: parent.width
-                    Label { text: "\uf007"; font { family: fontAwesome.name; pointSize: 12 } }
-                    Label { text: modelData.name + " (" + modelData.affiliation + ")"; Layout.preferredWidth: parent.width; elide: Text.ElideRight }
+                    Label { id: iconText; text: "\uf007"; font { family: fontAwesome.name; pointSize: 12 } }
+                    Label { text: modelData.name + " (" + modelData.affiliation + ")"; Layout.preferredWidth: frame.width-iconText.width-6*internal.viewMargin; elide: Text.ElideRight }
                 }
                 ItemDelegate {
                     anchors { fill: parent; margins: -11 }

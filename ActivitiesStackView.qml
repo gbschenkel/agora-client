@@ -7,6 +7,7 @@ MyStackView {
 
     property bool showDate: false
     delegate: Frame {
+        id: frame
         width: parent.width
         height: grid.height + 2*padding
         anchors { left: parent.left; right: parent.right; rightMargin: internal.viewMargin; leftMargin: internal.viewMargin }
@@ -27,7 +28,7 @@ MyStackView {
             Label { id: titleLabel; color: "#1c274a"; text: modelData.title; Layout.preferredWidth: thisStackView.width*0.8; wrapMode: Text.WordWrap }
             Repeater {
                 model: modelData.speakers
-                Label { text: modelData.name + " (" + modelData.affiliation + ")" }
+                Label { text: modelData.name + " (" + modelData.affiliation + ")"; Layout.preferredWidth: frame.width-10*internal.viewMargin; elide: Text.ElideRight }
             }
         }
         ItemDelegate {
