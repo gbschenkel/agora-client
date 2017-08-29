@@ -9,13 +9,12 @@ ApplicationWindow {
     visible: true
     width: 360
     height: 640
-    title: qsTr("QtCon Brasil 2017")
+    title: qsTr("Ágora Mobile")
 
     Material.primary: "#05070d"
     Material.foreground: "#05070d"
     Material.accent: "#41cd52"
 
-    property bool loggedin: userModel.json !== undefined && userModel.json.login !== undefined
     property string user
 
     header: ToolBar {
@@ -24,11 +23,11 @@ ApplicationWindow {
             anchors.fill: parent
             MyToolButton {
                 text: (internal.currentStackView.depth == 1) ? "\uf0c9":"\uf060"
-                enabled: loggedin
+                enabled: parentItem.state === "signedIn"
                 onClicked: (internal.currentStackView.depth == 1) ? drawer.open():internal.currentStackView.pop()
             }
             Label {
-                text: "QtCon Brasil 2017"
+                text: (internal.conferenceId === -1) ? "selecione a conferência":conferencesModel.json[internal.conferenceId-1].acronym
                 font.bold: true
                 color: "white"
                 verticalAlignment: Qt.AlignVCenter
@@ -36,15 +35,18 @@ ApplicationWindow {
                 Layout.fillWidth: true
             }
             MyToolButton {
+                enabled: parentItem.state === "signedIn"
                 Image {
                     anchors.centerIn: parent
                     width: 28; height: 28
                     source: "qrc:/qt-logo.png"
+                    visible: parentItem.state === "signedIn"
                 }
                 onClicked: {
                     for (var i = 0; i < internal.stackViews.length; i++) {
                         if (internal.stackViews[i].currentItem.objectName === "aboutPage") {
-                            tabBar.currentIndex = i
+                            swipeView.currentIndex = i
+                            swipeView.currentIndex = Qt.binding(function() { return tabBar.currentIndex })
                             return
                         }
                     }
@@ -60,6 +62,7 @@ ApplicationWindow {
 //        property string baseServer: "http://127.0.0.1:4567"
         property real maxWidth: fontMetrics.advanceWidth("PALESTRANTES")*1.75
         property real maxIconWidth: fontMetrics.advanceWidth("\uf19d")
+        property int conferenceId: -1
         property int viewMargin: 5
         property var stackViews: [ activitiesStackView, speakersStackView, tagsStackView ]
         property MyStackView currentStackView: stackViews[tabBar.currentIndex]
@@ -67,6 +70,7 @@ ApplicationWindow {
 
     FontLoader { id: fontAwesome; source: "qrc:///FontAwesome.otf" }
 
+    JSONListModel { id: conferencesModel; source: internal.baseServer + "/conferences" }
     JSONListModel {
         id: userModel
         onStateChanged: {
@@ -78,113 +82,139 @@ ApplicationWindow {
             }
         }
     }
-    JSONListModel { id: activitiesModel; source: internal.baseServer + "/full_activities_by_conference_and_day/2" }
-    JSONListModel { id: speakersModel; source: internal.baseServer + "/full_speakers_by_conference/2" }
-    JSONListModel { id: tagsModel; source: internal.baseServer + "/full_activity_tags_by_conference/2" }
+    JSONListModel { id: activitiesModel }
+    JSONListModel { id: speakersModel }
+    JSONListModel { id: tagsModel }
 
     Item {
-        visible: !loggedin
+        id: parentItem
         anchors.fill: parent
-        Column {
-            anchors.centerIn: parent
-            TextField {
-                id: loginTextField
-                anchors.horizontalCenter: parent.horizontalCenter
-                placeholderText: "número de inscrição"
-                Image {
-                    anchors { bottom: loginTextField.top; bottomMargin: 60 }
-                    width: appWindow.width/2
+        states: [
+            State { name: "waitingForConference" },
+            State { name: "waitingForSignIn" },
+            State { name: "signedIn" }
+        ]
+        state: (userModel.json !== undefined && userModel.json.login !== undefined) ? "signedIn":"waitingForConference"
+
+        Conferences {
+            id: conferencesListView
+            anchors.fill: parent
+            spacing: internal.viewMargin
+            anchors.topMargin: internal.viewMargin
+            model: conferencesModel.json
+            visible: parentItem.state === "waitingForConference"
+        }
+
+        Item {
+            visible: parentItem.state === "waitingForSignIn"
+            anchors.fill: parent
+            Column {
+                anchors.centerIn: parent
+                TextField {
+                    id: loginTextField
                     anchors.horizontalCenter: parent.horizontalCenter
-                    fillMode: Image.PreserveAspectFit
-                    source: "qrc:/qtconbr-logo.png"
+                    placeholderText: "número de inscrição"
+                    Image {
+                        anchors { bottom: loginTextField.top; bottomMargin: 60 }
+                        width: appWindow.width/2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        fillMode: Image.PreserveAspectFit
+                        source: (internal.conferenceId == 1) ? "qrc:/qtconbr-logo.png":"qrc:/erbase-logo.png"
+                    }
                 }
-            }
-            Button {
-                id: loginButton
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "entrar"
-                enabled: loginTextField.text != "" && userModel.state != "loading"
-                BusyIndicator {
-                    anchors { top: loginButton.bottom; horizontalCenter: parent.horizontalCenter }
-                    visible: userModel.state == "loading"
-                }
-                Label {
-                    id: errorLabel
-                    horizontalAlignment: Label.AlignHCenter
-                    anchors { top: loginButton.bottom; topMargin: 6; horizontalCenter: parent.horizontalCenter }
-                    visible: (loginTextField.text != "" && userModel.json !== undefined && userModel.json.login === undefined) || userModel.errorString !== ""
-                    color: "#41cd52"
-                }
-                onClicked: {
-                    userModel.source = internal.baseServer + "/login/" + loginTextField.text.toUpperCase()
-                    userModel.load()
+                Button {
+                    id: loginButton
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "entrar"
+                    enabled: loginTextField.text != "" && userModel.state != "loading"
+                    BusyIndicator {
+                        anchors { top: loginButton.bottom; horizontalCenter: parent.horizontalCenter }
+                        visible: userModel.state == "loading"
+                    }
+                    Label {
+                        id: errorLabel
+                        horizontalAlignment: Label.AlignHCenter
+                        anchors { top: loginButton.bottom; topMargin: 6; horizontalCenter: parent.horizontalCenter }
+                        visible: (loginTextField.text != "" && userModel.json !== undefined && userModel.json.login === undefined) || userModel.errorString !== ""
+                        color: "#41cd52"
+                    }
+                    onClicked: {
+                        userModel.source = internal.baseServer + "/login/" + internal.conferenceId + "/" + loginTextField.text.toUpperCase()
+                        userModel.load()
+                        activitiesModel.source = internal.baseServer + "/full_activities_by_conference_and_day/" + internal.conferenceId
+                        activitiesModel.load()
+                        speakersModel.source = internal.baseServer + "/full_speakers_by_conference/" + internal.conferenceId
+                        speakersModel.load()
+                        tagsModel.source = internal.baseServer + "/full_activity_tags_by_conference/" + internal.conferenceId
+                        tagsModel.load()
+                    }
                 }
             }
         }
-    }
 
-    SwipeView {
-        id: swipeView
-        anchors { fill: parent; topMargin: internal.viewMargin; bottomMargin: internal.viewMargin }
-        currentIndex: tabBar.currentIndex
-        visible: loggedin
+        SwipeView {
+            id: swipeView
+            anchors { fill: parent; topMargin: internal.viewMargin; bottomMargin: internal.viewMargin }
+            currentIndex: tabBar.currentIndex
+            visible: parentItem.state === "signedIn"
 
-        ColumnLayout {
-            ComboBox {
-                id: dayCombo
-                anchors { left: parent.left; right: parent.right; rightMargin: internal.viewMargin; leftMargin: internal.viewMargin }
-                model: activitiesModel.json
-                visible: activitiesStackView.depth == 1
-                textRole: "day"
+            ColumnLayout {
+                ComboBox {
+                    id: dayCombo
+                    anchors { left: parent.left; right: parent.right; rightMargin: internal.viewMargin; leftMargin: internal.viewMargin }
+                    model: activitiesModel.json
+                    visible: activitiesStackView.depth == 1
+                    textRole: "day"
+                }
+                ActivitiesStackView {
+                    id: activitiesStackView
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    model: (dayCombo.currentIndex != -1) ? activitiesModel.json[dayCombo.currentIndex].activities:undefined
+                }
             }
-            ActivitiesStackView {
-                id: activitiesStackView
+
+            MyStackView {
+                id: speakersStackView
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                model: (dayCombo.currentIndex != -1) ? activitiesModel.json[dayCombo.currentIndex].activities:undefined
-            }
-        }
-
-        MyStackView {
-            id: speakersStackView
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            model: speakersModel.json
-            delegate: Frame {
-                id: frame
-                width: parent.width
-                height: speakerRow.height + 2*padding
-                clip: true
-                anchors { left: parent.left; right: parent.right; rightMargin: internal.viewMargin; leftMargin: internal.viewMargin }
-                RowLayout {
-                    id: speakerRow
-                    Label { id: iconText; text: "\uf007"; font { family: fontAwesome.name; pointSize: 12 } }
-                    Label { text: modelData.name + ((modelData.affiliation !== "") ? (" (" + modelData.affiliation + ")"):""); Layout.preferredWidth: frame.width-iconText.width-6*internal.viewMargin; elide: Text.ElideRight }
-                }
-                ItemDelegate {
-                    anchors { fill: parent; margins: -11 }
-                    onClicked: speakersStackView.push("qrc:/speaker.qml", { "model": speakersStackView.model[index] })
+                model: speakersModel.json
+                delegate: Frame {
+                    id: frame
+                    width: parent.width
+                    height: speakerRow.height + 2*padding
+                    clip: true
+                    anchors { left: parent.left; right: parent.right; rightMargin: internal.viewMargin; leftMargin: internal.viewMargin }
+                    RowLayout {
+                        id: speakerRow
+                        Label { id: iconText; text: "\uf007"; font { family: fontAwesome.name; pointSize: 12 } }
+                        Label { text: modelData.name + ((modelData.affiliation !== "") ? (" (" + modelData.affiliation + ")"):""); Layout.preferredWidth: frame.width-iconText.width-6*internal.viewMargin; elide: Text.ElideRight }
+                    }
+                    ItemDelegate {
+                        anchors { fill: parent; margins: -11 }
+                        onClicked: speakersStackView.push("qrc:/speaker.qml", { "model": speakersStackView.model[index] })
+                    }
                 }
             }
-        }
 
-        MyStackView {
-            id: tagsStackView
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            model: tagsModel.json
-            delegate: Frame {
-                width: parent.width
-                height: tagRow.height + 2*padding
-                anchors { left: parent.left; right: parent.right; rightMargin: internal.viewMargin; leftMargin: internal.viewMargin }
-                RowLayout {
-                    id: tagRow
-                    Label { text: modelData.icon; Layout.preferredWidth: internal.maxIconWidth; horizontalAlignment: Text.AlignHCenter; font { family: fontAwesome.name; pointSize: 12 } }
-                    Label { text: modelData.name }
-                }
-                ItemDelegate {
-                    anchors { fill: parent; margins: -11 }
-                    onClicked: tagsStackView.push("qrc:/ActivitiesStackView.qml", { "model": tagsStackView.model[index].activities, "showDate": true })
+            MyStackView {
+                id: tagsStackView
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                model: tagsModel.json
+                delegate: Frame {
+                    width: parent.width
+                    height: tagRow.height + 2*padding
+                    anchors { left: parent.left; right: parent.right; rightMargin: internal.viewMargin; leftMargin: internal.viewMargin }
+                    RowLayout {
+                        id: tagRow
+                        Label { text: modelData.icon; Layout.preferredWidth: internal.maxIconWidth; horizontalAlignment: Text.AlignHCenter; font { family: fontAwesome.name; pointSize: 12 } }
+                        Label { text: modelData.name }
+                    }
+                    ItemDelegate {
+                        anchors { fill: parent; margins: -11 }
+                        onClicked: tagsStackView.push("qrc:/ActivitiesStackView.qml", { "model": tagsStackView.model[index].activities, "showDate": true })
+                    }
                 }
             }
         }
@@ -194,10 +224,10 @@ ApplicationWindow {
         id: drawer
         width: parent.width*3/4
         height: parent.height
-        dragMargin: loggedin ? 10:0
+        dragMargin: (parentItem.state === "signedIn") ? 10:0
         Image {
             id: drawerImage
-            source: "qrc:/drawer.png"
+            source: (internal.conferenceId == 1) ? "qrc:/drawer-qtconbr.png":"qrc:/drawer-erbase.png"
             anchors.top: parent.top
             width: parent.width
             fillMode: Image.PreserveAspectFit
@@ -246,6 +276,8 @@ ApplicationWindow {
                         if (index == 3) {
                             userModel.json = undefined
                             loginTextField.text = ""
+                            internal.conferenceId = -1
+                            parentItem.state = Qt.binding(function() { return (userModel.json !== undefined && userModel.json.login !== undefined) ? "signedIn":"waitingForConference" })
                         }
                         if (index == 4) {
                             for (var i = 0; i < internal.stackViews.length; i++) {
@@ -266,10 +298,12 @@ ApplicationWindow {
 
     BusyIndicator {
         anchors.centerIn: parent
-        visible: loggedin && (activitiesModel.state == "loading" || speakersModel.state == "loading" || tagsModel.state == "loading")
+        visible: (conferencesModel.state == "loading" || activitiesModel.state == "loading" || speakersModel.state == "loading" || tagsModel.state == "loading")
     }
 
     Settings {
+        property alias conferenceId: internal.conferenceId
+        property alias conferencesModel: conferencesModel.json
         property alias activitiesModel: activitiesModel.json
         property alias speakersModel: speakersModel.json
         property alias tagsModel: tagsModel.json
@@ -279,7 +313,7 @@ ApplicationWindow {
     footer: TabBar {
         id: tabBar
         width: parent.width
-        visible: loggedin
+        visible: parentItem.state === "signedIn"
         currentIndex: swipeView.currentIndex
         MyTabButton { width: Math.max(tabBar.width/4, internal.maxWidth); text: qsTr("Programação"); icon: "\uf073" }
         MyTabButton { width: Math.max(tabBar.width/4, internal.maxWidth); text: qsTr("Palestrantes"); icon: "\uf007" }
@@ -299,17 +333,15 @@ ApplicationWindow {
         }
         else {
             close.accepted = true
-            if (userModel.json.login === undefined)
+            if (userModel.json === undefined || userModel.json.login === undefined) {
                 userModel.json = undefined
+                internal.conferenceId = -1
+            }
         }
     }
 
     Component.onCompleted: {
-        if (activitiesModel.json === undefined)
-            activitiesModel.load()
-        if (speakersModel.json === undefined)
-            speakersModel.load()
-        if (tagsModel.json === undefined)
-            tagsModel.load()
+        if (conferencesModel.json === undefined)
+            conferencesModel.load()
     }
 }

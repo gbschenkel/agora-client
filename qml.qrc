@@ -3,6 +3,7 @@
         <file>main.qml</file>
         <file>activity.qml</file>
         <file>speaker.qml</file>
+        <file>Conferences.qml</file>
         <file>room.qml</file>
         <file>about.qml</file>
         <file>MyStackView.qml</file>
@@ -13,8 +14,10 @@
         <file>JSONListModel.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>FontAwesome.otf</file>
-        <file>drawer.png</file>
+        <file>drawer-qtconbr.png</file>
+        <file>drawer-erbase.png</file>
         <file>qtconbr-logo.png</file>
+        <file>erbase-logo.png</file>
         <file>qt-logo.png</file>
         <file>agora-qtconbr-icon.png</file>
     </qresource>

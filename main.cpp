@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("material");
 
     QQmlApplicationEngine engine;
-    QThread::currentThread()->sleep(5);
+    QThread::currentThread()->sleep(3);
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
     return app.exec();
