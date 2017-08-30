@@ -46,7 +46,9 @@ ApplicationWindow {
                     for (var i = 0; i < internal.stackViews.length; i++) {
                         if (internal.stackViews[i].currentItem.objectName === "aboutPage") {
                             swipeView.currentIndex = i
+                            tabBar.currentIndex = i
                             swipeView.currentIndex = Qt.binding(function() { return tabBar.currentIndex })
+                            tabBar.currentIndex = Qt.binding(function() { return swipeView.currentIndex })
                             return
                         }
                     }
@@ -282,7 +284,10 @@ ApplicationWindow {
                         if (index == 4) {
                             for (var i = 0; i < internal.stackViews.length; i++) {
                                 if (internal.stackViews[i].currentItem.objectName === "aboutPage") {
+                                    swipeView.currentIndex = i
                                     tabBar.currentIndex = i
+                                    swipeView.currentIndex = Qt.binding(function() { return tabBar.currentIndex })
+                                    tabBar.currentIndex = Qt.binding(function() { return swipeView.currentIndex })
                                     drawer.close()
                                     return
                                 }
