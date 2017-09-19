@@ -61,7 +61,7 @@ ApplicationWindow {
     QtObject {
         id: internal
         property string baseServer: "http://agora-server.herokuapp.com"
-//        property string baseServer: "http://127.0.0.1:4567"
+//        property string baseServer: "http://127.0.0.1:5000"
         property real maxWidth: fontMetrics.advanceWidth("PALESTRANTES")*1.75
         property real maxIconWidth: fontMetrics.advanceWidth("\uf19d")
         property int conferenceId: -1
@@ -121,7 +121,7 @@ ApplicationWindow {
                         width: appWindow.width/2
                         anchors.horizontalCenter: parent.horizontalCenter
                         fillMode: Image.PreserveAspectFit
-                        source: (internal.conferenceId == 1) ? "qrc:/qtconbr-logo.png":"qrc:/erbase-logo.png"
+                        source: (internal.conferenceId == 1) ? "qrc:/qtconbr-logo.png":((internal.conferenceId == 2) ? "qrc:/qtconbr-logo.png":"qrc:/webmedia-logo.png")
                     }
                 }
                 Button {
@@ -141,6 +141,7 @@ ApplicationWindow {
                         color: "#41cd52"
                     }
                     onClicked: {
+                        console.log(internal.baseServer + "/login/" + internal.conferenceId + "/" + loginTextField.text.toUpperCase())
                         userModel.source = internal.baseServer + "/login/" + internal.conferenceId + "/" + loginTextField.text.toUpperCase()
                         userModel.load()
                         activitiesModel.source = internal.baseServer + "/full_activities_by_conference_and_day/" + internal.conferenceId
@@ -229,7 +230,7 @@ ApplicationWindow {
         dragMargin: (parentItem.state === "signedIn") ? 10:0
         Image {
             id: drawerImage
-            source: (internal.conferenceId == 1) ? "qrc:/drawer-qtconbr.png":"qrc:/drawer-erbase.png"
+            source: (internal.conferenceId == 1) ? "qrc:/drawer-qtconbr.png":((internal.conferenceId == 2) ? "qrc:/drawer-qtconbr.png":"qrc:/drawer-webmedia.png")
             anchors.top: parent.top
             width: parent.width
             fillMode: Image.PreserveAspectFit

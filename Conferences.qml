@@ -12,7 +12,7 @@ ListView {
         Image {
             id: speakerRow
             width: parent.width
-            source: (index == 0) ? "qrc:/drawer-qtconbr.png":"qrc:/drawer-erbase.png"
+            source: (index == 0) ? "qrc:/drawer-qtconbr.png":((index == 1) ? "qrc:/drawer-erbase.png":"qrc:/drawer-webmedia.png")
             fillMode: Image.PreserveAspectFit
         }
         ItemDelegate {
