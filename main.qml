@@ -1,7 +1,7 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.1
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
-import QtQuick.Controls.Material 2.1
+import QtQuick.Controls.Material 2.3
 import Qt.labs.settings 1.0
 
 ApplicationWindow {
@@ -34,7 +34,7 @@ ApplicationWindow {
                 horizontalAlignment: Qt.AlignHCenter
                 Layout.fillWidth: true
             }
-            MyToolButton {
+            ToolButton {
                 enabled: parentItem.state === "signedIn"
                 Image {
                     anchors.centerIn: parent
@@ -121,7 +121,7 @@ ApplicationWindow {
                         width: appWindow.width/2
                         anchors.horizontalCenter: parent.horizontalCenter
                         fillMode: Image.PreserveAspectFit
-                        source: (internal.conferenceId == 1) ? "qrc:/qtconbr-logo.png":((internal.conferenceId == 2) ? "qrc:/qtconbr-logo.png":"qrc:/webmedia-logo.png")
+                        source: (internal.conferenceId != -1) ? conferencesModel.json[internal.conferenceId-1].logo_url:""
                     }
                 }
                 Button {
@@ -141,7 +141,6 @@ ApplicationWindow {
                         color: "#41cd52"
                     }
                     onClicked: {
-                        console.log(internal.baseServer + "/login/" + internal.conferenceId + "/" + loginTextField.text.toUpperCase())
                         userModel.source = internal.baseServer + "/login/" + internal.conferenceId + "/" + loginTextField.text.toUpperCase()
                         userModel.load()
                         activitiesModel.source = internal.baseServer + "/full_activities_by_conference_and_day/" + internal.conferenceId
@@ -164,7 +163,9 @@ ApplicationWindow {
             ColumnLayout {
                 ComboBox {
                     id: dayCombo
-                    anchors { left: parent.left; right: parent.right; rightMargin: internal.viewMargin; leftMargin: internal.viewMargin }
+                    Layout.fillWidth: true
+                    Layout.rightMargin: internal.viewMargin
+                    Layout.leftMargin: internal.viewMargin
                     model: activitiesModel.json
                     visible: activitiesStackView.depth == 1
                     textRole: "day"
@@ -230,7 +231,7 @@ ApplicationWindow {
         dragMargin: (parentItem.state === "signedIn") ? 10:0
         Image {
             id: drawerImage
-            source: (internal.conferenceId == 1) ? "qrc:/drawer-qtconbr.png":((internal.conferenceId == 2) ? "qrc:/drawer-qtconbr.png":"qrc:/drawer-webmedia.png")
+            source: (internal.conferenceId != -1) ? conferencesModel.json[internal.conferenceId-1].drawer_url:""
             anchors.top: parent.top
             width: parent.width
             fillMode: Image.PreserveAspectFit
@@ -321,9 +322,9 @@ ApplicationWindow {
         width: parent.width
         visible: parentItem.state === "signedIn"
         currentIndex: swipeView.currentIndex
-        MyTabButton { width: Math.max(tabBar.width/4, internal.maxWidth); text: qsTr("Programação"); icon: "\uf073" }
-        MyTabButton { width: Math.max(tabBar.width/4, internal.maxWidth); text: qsTr("Palestrantes"); icon: "\uf007" }
-        MyTabButton { width: Math.max(tabBar.width/4, internal.maxWidth); text: qsTr("Tags"); icon: "\uf02b" }
+        MyTabButton { width: Math.max(tabBar.width/4, internal.maxWidth); text: qsTr("Programação"); tabIcon: "\uf073" }
+        MyTabButton { width: Math.max(tabBar.width/4, internal.maxWidth); text: qsTr("Palestrantes"); tabIcon: "\uf007" }
+        MyTabButton { width: Math.max(tabBar.width/4, internal.maxWidth); text: qsTr("Tags"); tabIcon: "\uf02b" }
     }
 
     FontMetrics {

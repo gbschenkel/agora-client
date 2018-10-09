@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     app.setOrganizationName("qmob-solutions");
     app.setOrganizationDomain("qmob.solutions");
-    app.setApplicationName("agora-client-qtconbr");
+    app.setApplicationName("agora-client");
 
     QQuickStyle::setStyle("material");
 

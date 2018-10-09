@@ -1,5 +1,5 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.1
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 
 Flickable {
@@ -15,7 +15,7 @@ Flickable {
             width: appWindow.width/3
             anchors.horizontalCenter: parent.horizontalCenter
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/agora-qtconbr-icon.png"
+            source: "qrc:/agora-icon.png"
         }
         Label {
             text: "<br/><b>Ágora Mobile v0.2.1</b><br/>Este aplicativo foi desenvolvido em Qt pela <a href=\"http://qmob.solutions\" target=\"_blank\">qmob solutions</a>."

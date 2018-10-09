@@ -1,5 +1,5 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.1
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 
 ListView {
@@ -12,7 +12,7 @@ ListView {
         Image {
             id: speakerRow
             width: parent.width
-            source: (index == 0) ? "qrc:/drawer-qtconbr.png":((index == 1) ? "qrc:/drawer-erbase.png":"qrc:/drawer-webmedia.png")
+            source: modelData.drawer_url
             fillMode: Image.PreserveAspectFit
         }
         ItemDelegate {

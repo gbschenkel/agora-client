@@ -1,9 +1,9 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.1
-import QtQuick.Controls.Material 2.1
+import QtQuick 2.11
+import QtQuick.Controls 2.4
+import QtQuick.Controls.Material 2.3
 
 TabButton {
-    property alias icon: text.text
+    property alias tabIcon: text.text
     font.pointSize: 12
     Text {
         id: text
